@@ -1,0 +1,269 @@
+import "./App.css";
+import { useEffect, useState } from "react";
+import { Button, Input, Select, Form, Table, message, Alert } from "antd";
+import { PoweroffOutlined, CheckCircleOutlined } from "@ant-design/icons";
+function App() {
+  const [loading, setLoading] = useState(false);
+  const [value, setvalue] = useState();
+  const [alertBox, setAlertBox] = useState(false);
+  const [dataSource, setDataSource] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("https://jsonplaceholder.typicode.com/todos")
+      .then((response) => response.json())
+      .then((data) => {
+        setDataSource(data);
+      })
+      .catch((err) => {
+        console.log("ERROR=> ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+  const onButtonCLick = (e) => {
+    setLoading(true);
+    setTimeout(() => {
+      alert(value);
+      setLoading(false);
+    }, 1000);
+  };
+  const getData = (e) => {
+    setvalue(e.target.value);
+  };
+  const onFinish = () => {
+    setLoading(true);
+    return setTimeout(() => {
+      setLoading(false);
+      setAlertBox(true);
+      message.success("Login Successful");
+    }, 1000);
+  };
+  const cmp = ["Google", "Apple", "Amazon", "Microsoft", "Adobe"];
+
+  const data = [
+    {
+      name: "Name 1",
+      age: "10",
+      address: "Address 1",
+      key: "1",
+    },
+    {
+      name: "Name 2",
+      age: "20",
+      address: "Address 2",
+      key: "2",
+    },
+    {
+      name: "Name 3",
+      age: "30",
+      address: "Address 3",
+      key: "3",
+    },
+  ];
+  const column = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "key",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+      key: "key",
+      sorter: (a, b) => a.age - b.age,
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "key",
+    },
+    {
+      title: "Check",
+      key: "key",
+      render: (paylod) => {
+        return <p>{paylod.age >= 20 ? "True" : "False"}</p>;
+      },
+    },
+  ];
+
+  const columnData = [
+    {
+      key: "1",
+      title: "ID",
+      dataIndex: "id",
+    },
+    {
+      key: "2",
+      title: "User ID",
+      dataIndex: "userId",
+      sorter: (r1, r2) => {
+        return r1.userId > r2.userId;
+      },
+    },
+    {
+      key: "3",
+      title: "STATUS",
+      dataIndex: "completed",
+      render: (completed) => {
+        return <p>{completed ? "Complete" : "In Progress"}</p>;
+      },
+      filters: [
+        { text: "Complete", value: true },
+        { text: "In Progress", value: false },
+      ],
+      onFilter: (value, record) => {
+        return record.completed === value;
+      },
+    },
+  ];
+  return (
+    <div className="App">
+      <marquee behavior="alternate" scrollamount={10}>
+        <h2 align="center" style={{ color: "red" }}>
+          😜😛 ANT DESIGN Playground 😛😎
+        </h2>
+      </marquee>
+      <hr />
+      <h2 className="devider">🧐 INPUT</h2>
+      <Input.Search
+        allowClear
+        prefix={<CheckCircleOutlined />}
+        placeholder="search"
+        style={{ marginBottom: 25 }}
+        onChange={getData}
+      />
+      <h2 className="devider">🧐 BUTTON</h2>
+      <Button
+        type="primary"
+        loading={loading}
+        icon={<PoweroffOutlined />}
+        onClick={onButtonCLick}
+      >
+        Arsil MERN Stack Developer 😍😍😍
+      </Button>
+      <br />
+      <br />
+      <Button type="dashed" icon={<PoweroffOutlined />}>
+        😍😍😍 Arsil MERN Stack Developer
+      </Button>
+      <h2 className="devider">🧐 SELECT</h2>
+      <Select
+        mode="multiple"
+        maxTagCount={2}
+        allowClear
+        placeholder={"Select your DC"}
+        style={{ width: "150px" }}
+      >
+        {cmp.map((item, index) => {
+          return (
+            <Select.Option key={index} value={item}>
+              {cmp.item}
+            </Select.Option>
+          );
+        })}
+      </Select>
+      <h2 className="devider">🧐 FORM</h2>
+      <div className="formDesign">
+        <Form onFinish={onFinish}>
+          <Form.Item label="Username" name="username" type="text">
+            <Input placeholder="e.g: Arsil Malek" />
+          </Form.Item>
+          <Form.Item label="Password" name="password">
+            <Input.Password placeholder="********" />
+          </Form.Item>
+          <Form.Item>
+            {alertBox ? (
+              <Alert
+                type="success"
+                message="Login Successfull"
+                description="Welcome to the new dashboard."
+                closable
+              />
+            ) : (
+              <Button loading={loading} htmlType="submit" block type="primary">
+                Sign In
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </div>
+      <h2 className="devider">🧐 TABLE</h2>
+      <Table dataSource={data} columns={column}></Table>
+
+      <h2 className="devider">🧐 FILTER & SORT</h2>
+      <Table
+        loading={loading}
+        dataSource={dataSource}
+        columns={columnData}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          // total:200,
+          onChange: (page, pageSize) => {
+            setPage(page);
+            setPageSize(pageSize);
+          },
+        }}
+      ></Table>
+    </div>
+  );
+}
+
+export default App;
+
+
+---------------------------------------STYLE------------------------------------
+.App {
+  padding-left: 15px;
+  justify-content: center;
+  height: 100vh;
+  padding-top: 55px;
+  align-items: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+.formDesign{
+  box-shadow: 1px 1px 8px #777;
+  width: 300px;
+  padding: 15px;
+  border-radius: 15px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+.devider {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
